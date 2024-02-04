@@ -1,8 +1,7 @@
 import threading
 import time
 from kafka_consumer_1_total_daily_order_count import daily_order_count_consumer
-from kafka_consumer_2_total_daily_and_hourly_sales import daily_order_count_consumer2
-from helper_funcs import display_time, clear_screen
+from helper_funcs import manage_output
 
 shutdown_event = threading.Event()
 
@@ -12,30 +11,28 @@ consumer_outputs = {
     'Total sales for the past hour: ': 'Waiting for update...',
 }
 
-def manage_output():
-     while not shutdown_event.is_set():
-        clear_screen(1)
-        for key, value in consumer_outputs.items():
-            print(key, value)
+consumers = [daily_order_count_consumer
+             ]
 
-manage_output()
+consumer_threads = []
 
-""" if __name__ == '__main__':
-    consumers = [daily_order_count_consumer, daily_order_count_consumer2]
-    threads = []
 
+if __name__ == '__main__':
     for consumer in consumers:
-        thread = threading.Thread(target=consumer, args=(shutdown_event,))
+        thread = threading.Thread(target=consumer, args=(shutdown_event, consumer_outputs))
         thread.start()
-        threads.append(thread)
+        consumer_threads.append(thread)
+    
+    output_manager_thread = threading.Thread(target=manage_output, args=(shutdown_event, consumer_outputs))
+    output_manager_thread.start()
 
     try:
-        while True:
-             clear_screen(0)
-             time.sleep(1)
+        while not shutdown_event.is_set():
+            time.sleep(0.5)
     except KeyboardInterrupt:
         print('Stopping consumers...')
         shutdown_event.set()
+    for thread in consumer_threads + [output_manager_thread]:
+        thread.join()
 
-    for thread in threads:
-            thread.join() """
+    

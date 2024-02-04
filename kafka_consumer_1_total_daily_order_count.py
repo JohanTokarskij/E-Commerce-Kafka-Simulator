@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from time import sleep
 
 
-def daily_order_count_consumer(shutdown_event):
+def daily_order_count_consumer(shutdown_event, consumer_outputs):
     consumer_1 = KafkaConsumer(
         'e-commerce-orders',
         bootstrap_servers='localhost:9092',
@@ -16,13 +16,14 @@ def daily_order_count_consumer(shutdown_event):
     midnight = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
     while not shutdown_event.is_set():
-        print(f'Orders since midnight: {order_count}')
         messages = consumer_1.poll(timeout_ms=1000)
         for msgs in messages.values():
             for message in msgs:
                 order_time = datetime.strptime(message.value['ordertime'], '%Y-%m-%d %H:%M:%S')
                 if order_time >= midnight:
                     order_count +=1
+
+        consumer_outputs['Orders since midnight: '] = order_count
 
         if datetime.now() >= midnight + timedelta(days=1):
             midnight += timedelta(days=1)
