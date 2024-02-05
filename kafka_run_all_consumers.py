@@ -1,17 +1,18 @@
 import threading
 import time
 from kafka_consumer_1_total_daily_order_count import daily_order_count_consumer
+from kafka_consumer_2_total_daily_and_hourly_sales import sales_tracking_consumer
 from helper_funcs import manage_output
 
 shutdown_event = threading.Event()
 
 consumer_outputs = {
     'Orders since midnight: ': 'Waiting for update...',
-    'Total sales for the past day: ': 'Waiting for update...',
+    'Total sales for today: ': 'Waiting for update...',
     'Total sales for the past hour: ': 'Waiting for update...',
 }
 
-consumers = [daily_order_count_consumer
+consumers = [daily_order_count_consumer, sales_tracking_consumer
              ]
 
 consumer_threads = []

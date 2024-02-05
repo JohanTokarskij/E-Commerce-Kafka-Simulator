@@ -23,7 +23,12 @@ def generate_order():
     global order_id
     order = {
         'order_id': order_id,
-        'order_details': [[random.choice(products), random. randint(1, 5)] for _ in range(random.randint(1, 5))],
+        'order_details': [
+            {
+                'product': random.choice(products),
+                'quantity': random.randint(1,5)
+            } for _ in range(random.randint(1,5))
+        ],
         'customer_id': random.choice(CUSTOMER_ID),
         'ordertime': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
