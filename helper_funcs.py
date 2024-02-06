@@ -13,8 +13,3 @@ def display_time(shutdown_event, consumer_outputs):
         consumer_outputs['Current Time: ']  = current_time
         time.sleep(1)
 
-def manage_output(shutdown_event, consumer_outputs):
-     while not shutdown_event.is_set():
-        clear_screen(1)
-        for key, value in consumer_outputs.items():
-            print(key, value)

@@ -1,11 +1,18 @@
 import threading
 import signal
 import time
-from kafka_consumer_1_total_daily_order_count import daily_order_count_consumer
-from kafka_consumer_2_total_daily_and_hourly_sales import sales_tracking_consumer
-from helper_funcs import manage_output, display_time
+from kafka_consumer_1_daily_order_count import daily_order_count_consumer
+from kafka_consumer_2_daily_and_hourly_sales_tracking import daily_and_hourly_sales_tracking_consumer
+from helper_funcs import display_time, clear_screen
 
 shutdown_event = threading.Event()
+
+def manage_output(shutdown_event, consumer_outputs):
+     while not shutdown_event.is_set():
+        clear_screen(1)
+        for key, value in consumer_outputs.items():
+            print(key, value)
+
 
 consumer_outputs = {
     'Current Time: ': 'Waiting for update...',
@@ -14,17 +21,12 @@ consumer_outputs = {
     'Total sales for the past hour: ': 'Waiting for update...',
 }
 
-consumers = [daily_order_count_consumer
+consumers = [daily_order_count_consumer, daily_and_hourly_sales_tracking_consumer
              ]
 
 consumer_threads = []
 
-def signal_handler(sig, frame):
-    shutdown_event.set()
-
-
 if __name__ == '__main__':
-    signal.signal(signal.SIGINT, signal_handler)
     for consumer in consumers:
         thread = threading.Thread(target=consumer, args=(shutdown_event, consumer_outputs))
         thread.start()
