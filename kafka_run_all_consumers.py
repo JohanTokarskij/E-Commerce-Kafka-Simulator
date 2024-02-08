@@ -17,10 +17,11 @@ def manage_output(shutdown_event, consumer_output):
 consumer_output = {
     'Orders since midnight: ': 'Waiting for update...',
     'Total sales for today: ': 'Waiting for update...',
-    'Total sales for the past hour: ': 'Waiting for update...'
+    'Total sales for the past hour: ': 'Waiting for update...',
+    'Time left until next daily report: ': 'Waiting for update...'
 }
 
-consumers = [daily_order_count_consumer, daily_and_hourly_sales_tracking_consumer
+consumers = [daily_order_count_consumer, daily_and_hourly_sales_tracking_consumer, daily_sales_report_consumer
              ]
 
 consumer_threads = []

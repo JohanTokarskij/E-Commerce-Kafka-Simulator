@@ -1,15 +1,14 @@
 import os
 import time
-
+from datetime import datetime, timedelta
 
 ## HELPER FUNCTIONS #
 def clear_screen(sleep_value=2):
         time.sleep(sleep_value)
         os.system('cls' if os.name == 'nt' else 'clear')
 
-def display_time(shutdown_event, consumer_outputs):
-    while not shutdown_event.is_set():
-        current_time = time.strftime('%Y-%m-%d %H:%M:%S')
-        consumer_outputs['Current Time: ']  = current_time
-        time.sleep(1)
-
+def calculate_time_until_midnight():
+    now = datetime.now()
+    midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    time_left = midnight - now
+    return time_left

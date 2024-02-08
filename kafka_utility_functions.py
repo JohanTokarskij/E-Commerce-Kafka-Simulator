@@ -2,6 +2,8 @@ import json
 from datetime import datetime, timedelta
 from collections import deque
 
+
+# STATE MANAGEMENT FOR CONSUMERS:
 def save_state(file_path, state):
     with open(file_path, 'w') as file:
         json.dump(state, file)
@@ -13,8 +15,21 @@ def load_state(file_path, default_state):
     except FileNotFoundError:
         return default_state
 
+def generate_and_save_report(state, report_date):
+    filename = f'{report_date.strftime("%Y-%m-%d")}_sales_report.txt'
+    with open(filename, 'w') as file:
+        file.write(f'Daily Sales Report for {report_date}\n\n')
+        file.write(f'Total Orders: {state["order_count"]}\n\n')
+        file.write(f'Total Sales: ${state["daily_sales"]:.2f}\n\n')
+        file.write('Sales per Product:\n')
+        for product_name, details in state["product_counts"].items():
+            file.write(f'{product_name}: {details["quantity"]} sold, Total: ${details["total"]:.2f}\n')
+    print(f'Report saved to {filename}')
+
+    
+
 # Utility function for consumer_1 and consumer_3:
-def total_daily_order_count(consumer, state_file, default_state, shutdown_event, consumer_output):
+""" def total_daily_order_count(consumer, state_file, default_state, shutdown_event, consumer_output):
     state = load_state(state_file, default_state)
     order_count = state.get('order_count', 0)
     current_date = datetime.fromisoformat(state.get('current_date')).date()
@@ -33,19 +48,19 @@ def total_daily_order_count(consumer, state_file, default_state, shutdown_event,
                         
                         order_count +=1
 
-                        state = state = {'current_date': current_date.isoformat(), 'order_count': order_count}
+                        state = {'current_date': current_date.isoformat(), 
+                                'order_count': order_count}
                         save_state(state_file, state)
                     consumer_output['Orders since midnight: '] = order_count
-
 
     except Exception as e:
         print(f'Error processing messages: {e}')
     finally:
-        consumer.close()
+        consumer.close() """
 
 
 # Utility function for consumer_2 and consumer_3:
-def total_daily_and_hourly_sales(consumer, state_file, default_state, shutdown_event, consumer_output):
+""" def total_daily_and_hourly_sales(consumer, state_file, default_state, shutdown_event, consumer_output):
     state = load_state(state_file, default_state)
     daily_sales = state.get('daily_sales', 0)
     hourly_sales_data = deque([(datetime.fromisoformat(timestamp), amount) for timestamp, amount in state.get('hourly_sales_data', [])])
@@ -64,7 +79,6 @@ def total_daily_and_hourly_sales(consumer, state_file, default_state, shutdown_e
                         if order_date > current_date:
                             current_date = order_date
                             daily_sales = 0
-                            hourly_sales_data.clear()
                         
                         daily_sales += order_amount
 
@@ -77,16 +91,15 @@ def total_daily_and_hourly_sales(consumer, state_file, default_state, shutdown_e
                         hourly_sales_total = sum(amount for _, amount in hourly_sales_data if _ >= one_hour_ago)
 
                         state = {
+                            'current_date': current_date.isoformat(),
                             'daily_sales': round(daily_sales, 2),
-                            'hourly_sales_data': [(timestamp.isoformat(), amount) for timestamp, amount in hourly_sales_data],
-                            'current_date': current_date.isoformat()
+                            'hourly_sales_data': [(timestamp.isoformat(), amount) for timestamp, amount in hourly_sales_data]
                         }
                         save_state(state_file, state)
                     consumer_output['Total sales for today: '] = round(daily_sales, 2)
                     consumer_output['Total sales for the past hour: '] = round(hourly_sales_total, 2)
 
-
     except Exception as e:
         print(f'Error processing messages: {e}')
     finally:
-        consumer.close()
+        consumer.close() """
