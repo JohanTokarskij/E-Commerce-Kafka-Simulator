@@ -12,8 +12,7 @@ def daily_sales_report_consumer(shutdown_event, consumer_output):
         bootstrap_servers='localhost:9092',
         group_id='daily_sales_report_group',
         auto_offset_reset='earliest',
-        value_deserializer=lambda x: json.loads(x.decode())
-    )
+        value_deserializer=lambda x: json.loads(x.decode()))
 
     state_file = 'kafka_consumer_3_daily_report_state.json'
     default_state = {'current_date': datetime.now().date().isoformat(),
