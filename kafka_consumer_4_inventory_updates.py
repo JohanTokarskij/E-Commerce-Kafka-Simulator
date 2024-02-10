@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from time import sleep
 from kafka_utility_functions import load_state, save_state
+from pprint import pprint
 
 def inventory_management_consumer(shutdown_event, consumer_output, products):
     consumer_4 = KafkaConsumer(
@@ -13,7 +14,7 @@ def inventory_management_consumer(shutdown_event, consumer_output, products):
         value_deserializer=lambda x: json.loads(x.decode()))
     
     state_file  = 'kafka_consumer_4_inventory_state.json'
-    default_inventory_state = {product['product_id']: {'name': product['name'], 'quantity': 100} for product in products}    
+    default_inventory_state = {str(product['product_id']): {'name': product['name'], 'quantity': 100} for product in products}    
     inventory = load_state(state_file, default_inventory_state)
 
     refill_threshold = 30
@@ -32,19 +33,21 @@ def inventory_management_consumer(shutdown_event, consumer_output, products):
 
                                 if inventory[product_id]['quantity'] < refill_threshold:
                                     print(f'Refilling {product_id} - {inventory[product_id]["name"]}')
-                                    """ for i in range(3, 0, -1):
-                                        print(f"Refilling {product_id} - {inventory[product_id]['name']} in {i}...")
-                                        sleep(1) """ 
                                     inventory[product_id]['quantity'] += refill_amount
-                                    #print(f"{inventory[product_id]['name']} refilled. New quantity: {inventory[product_id]['quantity']}")
                             else:
                                 print(f"Product ID {product_id} not found in inventory")
 
                             save_state(state_file, inventory)
-                        
+
                             consumer_output['Inventory Update: '] = {pid: inventory[pid] for pid in sorted(inventory.keys())}            
     except Exception as e:
         print(f'Error processing messages: {e}')
     finally:
-        consumer_4.close()
+        consumer_4.close() 
 
+""" # DEBUG:
+import threading
+from store_initialization import products
+shutdown_event = threading.Event()
+consumer_output = {}
+inventory_management_consumer(shutdown_event, consumer_output, products) """

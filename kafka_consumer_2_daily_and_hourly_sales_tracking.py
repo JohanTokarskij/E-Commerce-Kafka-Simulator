@@ -53,8 +53,8 @@ def daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output):
                             'hourly_sales_data': [(timestamp.isoformat(), amount) for timestamp, amount in hourly_sales_data]
                         }
                         save_state(state_file, state)
-                        consumer_output['Total sales for today: '] = round(daily_sales, 2)
-                        consumer_output['Total sales for the past hour: '] = round(hourly_sales_total, 2)
+                        consumer_output['Total sales for today: '] = f'{round(daily_sales, 2)} $'
+                        consumer_output['Total sales for the past hour: '] = f'{round(hourly_sales_total, 2)} $'
 
     except Exception as e:
         print(f'Error processing messages: {e}')
