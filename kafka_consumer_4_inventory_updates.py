@@ -39,7 +39,7 @@ def inventory_management_consumer(shutdown_event, consumer_output, products):
 
                             save_state(state_file, inventory)
 
-                            consumer_output['Inventory Update: '] = {pid: inventory[pid] for pid in sorted(inventory.keys())}            
+                            consumer_output['Inventory Update: '] = {pid: inventory[pid] for pid in sorted(inventory.keys(), key=int)}            
     except Exception as e:
         print(f'Error processing messages: {e}')
     finally:
