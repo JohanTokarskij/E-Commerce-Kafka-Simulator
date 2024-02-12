@@ -11,3 +11,5 @@ products = [{'product_id': str(i),
              'name': fake.ecommerce_name().split(' ')[-1], 
              'price': round(random.uniform(10, 50), 2)} for i in range(1, 11)]
 
+product_refill_threshold = 30
+product_refill_amount = 100

@@ -5,7 +5,6 @@ from kafka_utility_functions import load_state, save_state, generate_and_save_re
 from helper_funcs import calculate_time_until_midnight
 
 
-
 def daily_sales_report_consumer(shutdown_event, consumer_output):
     consumer_3 = KafkaConsumer(
         'e-commerce-orders',
@@ -14,7 +13,7 @@ def daily_sales_report_consumer(shutdown_event, consumer_output):
         auto_offset_reset='earliest',
         value_deserializer=lambda x: json.loads(x.decode()))
 
-    state_file = 'kafka_consumer_3_daily_report_state.json'
+    state_file = './kafka_states/kafka_consumer_3_daily_report_state.json'
     default_state = {'current_date': datetime.now().date().isoformat(),
                      'order_count': 0,
                      'daily_sales': 0,

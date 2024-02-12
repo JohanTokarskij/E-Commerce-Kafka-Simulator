@@ -1,11 +1,10 @@
 from kafka import KafkaConsumer
 import json
-from datetime import datetime
-from time import sleep
 from kafka_utility_functions import load_state, save_state
-from pprint import pprint
+from store_initialization import product_refill_amount, product_refill_threshold
 
-def inventory_management_consumer(shutdown_event, consumer_output, products):
+
+def inventory_management_consumer(shutdown_event, consumer_output, products, product_refill_amount, product_refill_threshold):
     consumer_4 = KafkaConsumer(
         'e-commerce-orders',
         bootstrap_servers='localhost:9092',
@@ -13,12 +12,10 @@ def inventory_management_consumer(shutdown_event, consumer_output, products):
         auto_offset_reset='earliest',
         value_deserializer=lambda x: json.loads(x.decode()))
     
-    state_file  = 'kafka_consumer_4_inventory_state.json'
+    state_file  = './kafka_states/kafka_consumer_4_inventory_state.json'
     default_inventory_state = {str(product['product_id']): {'name': product['name'], 'quantity': 100} for product in products}    
     inventory = load_state(state_file, default_inventory_state)
 
-    refill_threshold = 30
-    refill_amount = 100
     try:
         while not shutdown_event.is_set():
             messages = consumer_4.poll(timeout_ms=1000)
@@ -31,9 +28,9 @@ def inventory_management_consumer(shutdown_event, consumer_output, products):
                             if product_id in inventory:
                                 inventory[product_id]['quantity'] -= quantity
 
-                                if inventory[product_id]['quantity'] < refill_threshold:
+                                if inventory[product_id]['quantity'] < product_refill_threshold:
                                     print(f'Refilling {product_id} - {inventory[product_id]["name"]}')
-                                    inventory[product_id]['quantity'] += refill_amount
+                                    inventory[product_id]['quantity'] += product_refill_amount
                             else:
                                 print(f"Product ID {product_id} not found in inventory")
 

@@ -12,7 +12,7 @@ def daily_order_count_consumer(shutdown_event, consumer_output):
         auto_offset_reset='earliest',
         value_deserializer=lambda x: json.loads(x.decode()))
 
-    state_file = 'kafka_consumer_1_daily_order_count_state.json'
+    state_file = './kafka_states/kafka_consumer_1_daily_order_count_state.json'
     default_state = {'current_date': datetime.now().date().isoformat(),
                      'order_count': 0}
 

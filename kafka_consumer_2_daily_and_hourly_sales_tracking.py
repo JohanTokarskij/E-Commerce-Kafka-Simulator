@@ -13,7 +13,7 @@ def daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output):
         auto_offset_reset='earliest',
         value_deserializer=lambda x: json.loads(x.decode()))
 
-    state_file = 'kafka_consumer_2_daily_and_hourly_sales_state.json'
+    state_file = './kafka_states/kafka_consumer_2_daily_and_hourly_sales_state.json'
     default_state = {'current_date': datetime.now().date().isoformat(),
                      'daily_sales': 0,
                      'hourly_sales_data': []}

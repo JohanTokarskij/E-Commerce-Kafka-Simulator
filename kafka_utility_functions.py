@@ -1,21 +1,86 @@
 import json
-from datetime import datetime, timedelta
-from collections import deque
+import os
+from helper_funcs import clear_screen
+from store_initialization import product_refill_threshold, product_refill_amount
 
 
-# STATE MANAGEMENT FOR CONSUMERS:
 def save_state(file_path, state):
+    """
+    Save the given state to a file specified by file_path.
+
+    Args:
+        file_path (str): The path to the file where the state will be saved.
+        state (dict): The state to be saved as a dictionary.
+
+    Returns:
+        None
+    """
     with open(file_path, 'w') as file:
         json.dump(state, file)
 
+
 def load_state(file_path, default_state):
+    """
+    Load the state from a file specified by file_path. 
+    If the file does not exist, return the default_state.
+
+    Args:
+        file_path (str): The path to the file from which the state will be loaded.
+        default_state (dict): The default state to return if the file does not exist.
+
+    Returns:
+        dict: The loaded state or the default state if the file does not exist.
+    """
     try:
         with open(file_path, 'r') as file:
             return json.load(file)
     except FileNotFoundError:
         return default_state
 
+
+def manage_output(shutdown_event, consumer_output):
+    """
+    Continuously manage the output for consumers in the terminal until the shutdown_event is set.
+
+    Args:
+        shutdown_event (threading.Event): An event to signal the function to stop running.
+        consumer_output (dict): A dictionary containing the output of consumers to be displayed.
+
+    Returns:
+        None
+    """
+    if not os.path.exists('./kafka_states'):
+        os.makedirs('./kafka_states')
+        
+    while not shutdown_event.is_set():
+        clear_screen(1)
+        for key, value in consumer_output.items():
+            print('+', '-'*45, '+')
+            print(key)
+            if isinstance(value, dict) and key == 'Inventory Update: ':
+                print('{:<3} {:<30} {:>10}'.format('ID', 'Product Name', 'Quantity'))
+                for pid, details in value.items():
+                    print('{:<3} {:<30} {:>10}'.format(pid, details['name'], details['quantity']))
+            else:
+                print(value)
+            print('+', '-'*45, '+', '\n')
+        if any('Inventory Update: ' in key for key in consumer_output.keys()):
+            print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')
+            print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')
+            
+
+
 def generate_and_save_report(state, report_date):
+    """
+    Generate and save a daily sales report for a specified date.
+
+    Args:
+        state (dict): The state containing sales data.
+        report_date (datetime.date): The date for which the report is generated.
+
+    Returns:
+        None
+    """
     filename = f'{report_date.strftime("%Y-%m-%d")}_sales_report.txt'
     with open(filename, 'w') as file:
         file.write(f'Daily Sales Report for {report_date}\n\n')
@@ -26,80 +91,3 @@ def generate_and_save_report(state, report_date):
             file.write(f'{product_name}: {details["quantity"]} sold, Total: ${details["total"]:.2f}\n')
     print(f'Report saved to {filename}')
 
-    
-
-# Utility function for consumer_1 and consumer_3:
-""" def total_daily_order_count(consumer, state_file, default_state, shutdown_event, consumer_output):
-    state = load_state(state_file, default_state)
-    order_count = state.get('order_count', 0)
-    current_date = datetime.fromisoformat(state.get('current_date')).date()
-
-    try:
-        while not shutdown_event.is_set():
-            messages = consumer.poll(timeout_ms=1000)
-            if messages:
-                for msgs in messages.values():
-                    for message in msgs:
-                        order_date = datetime.strptime(message.value['ordertime'], '%Y-%m-%d %H:%M:%S').date()
-
-                        if order_date > current_date:
-                            current_date = order_date
-                            order_count = 0
-                        
-                        order_count +=1
-
-                        state = {'current_date': current_date.isoformat(), 
-                                'order_count': order_count}
-                        save_state(state_file, state)
-                    consumer_output['Orders since midnight: '] = order_count
-
-    except Exception as e:
-        print(f'Error processing messages: {e}')
-    finally:
-        consumer.close() """
-
-
-# Utility function for consumer_2 and consumer_3:
-""" def total_daily_and_hourly_sales(consumer, state_file, default_state, shutdown_event, consumer_output):
-    state = load_state(state_file, default_state)
-    daily_sales = state.get('daily_sales', 0)
-    hourly_sales_data = deque([(datetime.fromisoformat(timestamp), amount) for timestamp, amount in state.get('hourly_sales_data', [])])
-    current_date = datetime.fromisoformat(state.get('current_date')).date()
-
-    try:
-        while not shutdown_event.is_set():
-            messages = consumer.poll(timeout_ms=1000)
-            if messages:
-                for msgs in messages.values():
-                    for message in msgs:
-                        order_time = datetime.strptime(message.value['ordertime'], '%Y-%m-%d %H:%M:%S')
-                        order_date = order_time.date()
-                        order_amount = round(sum(order_detail['quantity'] * order_detail['product']['price'] for order_detail in message.value['order_details']), 2)
-
-                        if order_date > current_date:
-                            current_date = order_date
-                            daily_sales = 0
-                        
-                        daily_sales += order_amount
-
-                        hourly_sales_data.append((order_time, order_amount))
-
-                        one_hour_ago = datetime.now() - timedelta(hours=1)
-                        while hourly_sales_data and hourly_sales_data[0][0] < one_hour_ago:
-                            hourly_sales_data.popleft()
-                        
-                        hourly_sales_total = sum(amount for _, amount in hourly_sales_data if _ >= one_hour_ago)
-
-                        state = {
-                            'current_date': current_date.isoformat(),
-                            'daily_sales': round(daily_sales, 2),
-                            'hourly_sales_data': [(timestamp.isoformat(), amount) for timestamp, amount in hourly_sales_data]
-                        }
-                        save_state(state_file, state)
-                    consumer_output['Total sales for today: '] = round(daily_sales, 2)
-                    consumer_output['Total sales for the past hour: '] = round(hourly_sales_total, 2)
-
-    except Exception as e:
-        print(f'Error processing messages: {e}')
-    finally:
-        consumer.close() """
