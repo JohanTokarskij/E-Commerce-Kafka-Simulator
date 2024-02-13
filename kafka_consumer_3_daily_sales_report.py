@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from kafka import KafkaConsumer
 from kafka_utility_functions import load_state, save_state, generate_and_save_report
 from helper_funcs import calculate_time_until_midnight

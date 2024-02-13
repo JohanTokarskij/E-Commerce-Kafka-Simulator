@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from helper_funcs import clear_screen
 from store_initialization import product_refill_threshold, product_refill_amount
 
@@ -58,16 +59,15 @@ def manage_output(shutdown_event, consumer_output):
             print('+', '-'*45, '+')
             print(f'{key:^47}')
             if isinstance(value, dict) and key == 'Inventory Update: ':
-                print(f'{"ID":>5} {"Product Name":<30} {"Quantity":^10}')
+                print(f'{"ID":>8} {"Product Name":<25} {"Quantity":^10}')
                 for pid, details in value.items():
-                    print(f'{pid:>5} {details["name"]:.<30} {details["quantity"]:^5}')
+                    print(f'{pid:>8} {details["name"]:.<25} {details["quantity"]:^5}')
             else:
                 print(f'{value:^47}')
             print('+', '-'*45, '+', '\n')
         if any('Inventory Update: ' in key for key in consumer_output.keys()):
             print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')
-            print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')
-            
+            print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')         
 
 
 def generate_and_save_report(state, report_date):
@@ -90,4 +90,9 @@ def generate_and_save_report(state, report_date):
         for product_name, details in state["product_counts"].items():
             file.write(f'{product_name}: {details["quantity"]} sold, Total: ${details["total"]:.2f}\n')
     print(f'Report saved to {filename}')
+
+
+def send_email_simulation(order_id, customer_id):
+    with open('order_emails.txt', 'a') as file:
+        file.write(f'Order {order_id} for Customer {customer_id} has been handled and dispatched at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.\n')
 

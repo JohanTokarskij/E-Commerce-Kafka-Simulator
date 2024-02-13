@@ -6,6 +6,7 @@ from kafka_consumer_1_daily_order_count import daily_order_count_consumer
 from kafka_consumer_2_daily_and_hourly_sales_tracking import daily_and_hourly_sales_tracking_consumer
 from kafka_consumer_3_daily_sales_report import daily_sales_report_consumer
 from kafka_consumer_4_inventory_management import inventory_management_consumer
+from kafka_consumer_5_and_producer_order_handling import order_handling_consumer
 from store_initialization import product_refill_amount, product_refill_threshold
 
 
@@ -23,7 +24,8 @@ consumers = [
     (daily_order_count_consumer, (shutdown_event, consumer_output)),
     (daily_and_hourly_sales_tracking_consumer, (shutdown_event, consumer_output)),
     (daily_sales_report_consumer, (shutdown_event, consumer_output)),
-    (inventory_management_consumer, (shutdown_event, consumer_output, products, product_refill_amount, product_refill_threshold))
+    (inventory_management_consumer, (shutdown_event, consumer_output, products, product_refill_amount, product_refill_threshold)),
+    (order_handling_consumer(shutdown_event, consumer_output))
 ]
 
 consumer_threads = []
