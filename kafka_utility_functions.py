@@ -56,13 +56,13 @@ def manage_output(shutdown_event, consumer_output):
         clear_screen(1)
         for key, value in consumer_output.items():
             print('+', '-'*45, '+')
-            print(key)
+            print(f'{key:^47}')
             if isinstance(value, dict) and key == 'Inventory Update: ':
-                print('{:<3} {:<30} {:>10}'.format('ID', 'Product Name', 'Quantity'))
+                print(f'{"ID":>5} {"Product Name":<30} {"Quantity":^10}')
                 for pid, details in value.items():
-                    print('{:<3} {:<30} {:>10}'.format(pid, details['name'], details['quantity']))
+                    print(f'{pid:>5} {details["name"]:.<30} {details["quantity"]:^5}')
             else:
-                print(value)
+                print(f'{value:^47}')
             print('+', '-'*45, '+', '\n')
         if any('Inventory Update: ' in key for key in consumer_output.keys()):
             print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')

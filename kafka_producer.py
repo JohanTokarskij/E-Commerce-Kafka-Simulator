@@ -1,7 +1,7 @@
+import json
 from datetime import datetime
 from time import sleep
 import random
-import json
 from kafka import KafkaProducer
 from store_initialization import products, order_id, CUSTOMER_ID
 

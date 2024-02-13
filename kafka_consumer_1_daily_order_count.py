@@ -1,6 +1,6 @@
-from kafka import KafkaConsumer
 import json
 from datetime import datetime
+from kafka import KafkaConsumer
 from kafka_utility_functions import load_state, save_state
 
 

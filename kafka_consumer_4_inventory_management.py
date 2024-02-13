@@ -1,5 +1,5 @@
-from kafka import KafkaConsumer
 import json
+from kafka import KafkaConsumer
 from kafka_utility_functions import load_state, save_state
 from store_initialization import product_refill_amount, product_refill_threshold
 

@@ -1,0 +1,31 @@
+Daily Sales Report for 2024-02-12
+
+Total Orders: 4082
+
+Total Sales: $1198201.66
+
+Sales per Product:
+Mouse: 1451 sold, Total: $36651.04
+Tuna: 218 sold, Total: $9337.16
+Bacon: 2087 sold, Total: $50130.80
+Shoes: 404 sold, Total: $7227.35
+Soap: 2209 sold, Total: $84465.07
+Pizza: 2300 sold, Total: $65825.65
+Computer: 1522 sold, Total: $51542.92
+Chicken: 194 sold, Total: $3379.92
+Chips: 433 sold, Total: $14479.34
+Car: 1562 sold, Total: $60180.23
+Chair: 2176 sold, Total: $71308.75
+Ball: 1472 sold, Total: $52548.55
+Keyboard: 178 sold, Total: $7193.22
+Salad: 1311 sold, Total: $56524.75
+Cheese: 4177 sold, Total: $115263.99
+Hat: 2240 sold, Total: $99669.37
+Gloves: 148 sold, Total: $2308.40
+Shirt: 2216 sold, Total: $88344.78
+Towels: 2018 sold, Total: $91394.50
+Fish: 1345 sold, Total: $30086.18
+Pants: 3345 sold, Total: $62136.27
+Sausages: 26 sold, Total: $1135.42
+Bike: 2466 sold, Total: $84024.94
+Table: 1311 sold, Total: $53043.06
