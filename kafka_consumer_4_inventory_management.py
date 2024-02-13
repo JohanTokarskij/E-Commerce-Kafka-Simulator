@@ -47,4 +47,4 @@ import threading
 from store_initialization import products
 shutdown_event = threading.Event()
 consumer_output = {}
-inventory_management_consumer(shutdown_event, consumer_output, products) """
+inventory_management_consumer(shutdown_event, consumer_output, products, product_refill_amount, product_refill_threshold) """

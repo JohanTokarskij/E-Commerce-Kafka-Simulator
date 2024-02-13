@@ -2,9 +2,8 @@ import json
 import random
 from kafka import KafkaProducer, KafkaConsumer
 from kafka_utility_functions import send_email_simulation
-from pprint import pprint
 
-def order_handling_consumer(shutdown_event, consumer_output):
+def order_processing_consumer(shutdown_event):
     consumer_5 = KafkaConsumer(
         'e-commerce-orders',
         bootstrap_servers='localhost:9092',
@@ -29,8 +28,8 @@ def order_handling_consumer(shutdown_event, consumer_output):
                             customer_id = message.value['customer_id']
                             send_email_simulation(order_id, customer_id)
 
-                            message.value['handled'] = True
-                            producer.send('handled-orders', message.value)
+                            message.value['processed'] = True
+                            producer.send('processed-orders', message.value)
                             producer.flush()
                         
     except Exception as e:
@@ -45,4 +44,4 @@ def order_handling_consumer(shutdown_event, consumer_output):
 """ import threading
 shutdown_event = threading.Event()
 consumer_output = {}
-order_handling_consumer(shutdown_event, consumer_output) """
+order_handling_consumer(shutdown_event) """
