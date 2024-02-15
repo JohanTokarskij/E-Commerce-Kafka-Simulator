@@ -3,6 +3,7 @@ import random
 from kafka import KafkaProducer, KafkaConsumer
 from kafka_utility_functions import send_email_simulation
 
+
 def order_processing_consumer(shutdown_event):
     consumer_5 = KafkaConsumer(
         'e-commerce-orders',
@@ -31,14 +32,11 @@ def order_processing_consumer(shutdown_event):
                             message.value['processed'] = True
                             producer.send('processed-orders', message.value)
                             producer.flush()
-                        
+
     except Exception as e:
         print(f'Error in order handling consumer: {e}')
     finally:
         consumer_5.close()
-
-
-
 
 
 """ import threading

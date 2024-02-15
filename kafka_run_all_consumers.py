@@ -17,7 +17,8 @@ consumer_output = {
     'Total sales for today: ': 'Waiting for update...',
     'Total sales for the past hour: ': 'Waiting for update...',
     'Time left until next daily report: ': 'Waiting for update...',
-    'Inventory Update: ': 'Waiting for update...'
+    'Inventory Update: ': 'Waiting for update...',
+    'Processed orders statistics': 'Waiting for update...'
 }
 
 consumers = [

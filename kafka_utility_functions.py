@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from helper_funcs import clear_screen
 from store_initialization import product_refill_threshold, product_refill_amount
 
@@ -62,13 +62,13 @@ def manage_output(shutdown_event, consumer_output):
                 print(f'{"ID":>8} {"Product Name":<25} {"Quantity":^10}')
                 for pid, details in value.items():
                     print(f'{pid:>8} {details["name"]:.<25} {details["quantity"]:^5}')
+                print('\n')
+                print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')
+                print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')         
+
             else:
                 print(f'{value:^47}')
-            print('+', '-'*45, '+', '\n')
-        if any('Inventory Update: ' in key for key in consumer_output.keys()):
-            print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')
-            print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')         
-
+            #print('+', '-'*45, '+', '\n')
 
 def generate_and_save_report(state, report_date):
     """
@@ -96,3 +96,20 @@ def send_email_simulation(order_id, customer_id):
     with open('order_emails.txt', 'a') as file:
         file.write(f'Order {order_id} for Customer {customer_id} has been handled and dispatched at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.\n')
 
+
+def update_time_windows(time_windows, current_time):
+    for key, window in time_windows:
+        if key == '1. Last 5 minutes':
+            time_limit = current_time - timedelta(minutes=5)
+        elif key == '2. Last 30 minutes':
+            time_limit = current_time - timedelta(minutes=30)
+        elif key == '3. Last hour':
+            time_limit = current_time - timedelta(hours=1)
+        elif key == '4. Last 2 hours':
+            time_limit = current_time = timedelta(hours=2)
+        elif key == '5. Average 5 min/last 2 hours':
+            len(time_windows['4. Last 2 hours']/24)
+            continue
+
+        while window and window[0] < time_limit:
+            window.popleft()

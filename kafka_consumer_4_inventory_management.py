@@ -11,10 +11,11 @@ def inventory_management_consumer(shutdown_event, consumer_output, products, pro
         group_id='inventory_management_group',
         auto_offset_reset='earliest',
         value_deserializer=lambda x: json.loads(x.decode()))
-    
-    state_file  = './kafka_states/kafka_consumer_4_inventory_state.json'
-    default_inventory_state = {str(product['product_id']): {'name': product['name'], 'quantity': 100} for product in products}    
-    inventory = load_state(state_file, default_inventory_state)
+
+    state_file = './kafka_states/kafka_consumer_4_inventory_state.json'
+    default_state = {str(product['product_id']): {
+        'name': product['name'], 'quantity': 100} for product in products}
+    state = load_state(state_file, default_state)
 
     try:
         while not shutdown_event.is_set():
@@ -25,22 +26,26 @@ def inventory_management_consumer(shutdown_event, consumer_output, products, pro
                         for item in message.value['order_details']:
                             product_id = str(item['product']['product_id'])
                             quantity = item['quantity']
-                            if product_id in inventory:
-                                inventory[product_id]['quantity'] -= quantity
+                            if product_id in state:
+                                state[product_id]['quantity'] -= quantity
 
-                                if inventory[product_id]['quantity'] < product_refill_threshold:
-                                    print(f'Refilling {product_id} - {inventory[product_id]["name"]}')
-                                    inventory[product_id]['quantity'] += product_refill_amount
+                                if state[product_id]['quantity'] < product_refill_threshold:
+                                    print(
+                                        f'Refilling {product_id} - {state[product_id]["name"]}')
+                                    state[product_id]['quantity'] += product_refill_amount
                             else:
-                                print(f"Product ID {product_id} not found in inventory")
+                                print(
+                                    f"Product ID {product_id} not found in inventory")
 
-                            save_state(state_file, inventory)
+                            save_state(state_file, state)
 
-                            consumer_output['Inventory Update: '] = {pid: inventory[pid] for pid in sorted(inventory.keys(), key=int)}            
+                            consumer_output['Inventory Update: '] = {
+                                pid: state[pid] for pid in sorted(state.keys(), key=int)}
     except Exception as e:
         print(f'Error processing messages: {e}')
     finally:
-        consumer_4.close() 
+        consumer_4.close()
+
 
 """ # DEBUG:
 import threading
