@@ -79,7 +79,7 @@ def daily_sales_report_consumer(shutdown_event, consumer_output):
                         hours, remainder = divmod(time_left.seconds, 3600)
                         minutes, seconds = divmod(remainder, 60)
                         consumer_output[
-                            'Time left until next daily report: '] = f"{hours} hours, {minutes} minutes, {seconds} seconds left"
+                            'Time left until next daily report:'] = f"{hours} hours, {minutes} minutes, {seconds} seconds left"
 
     except Exception as e:
         print(f'Error processing messages: {e}')

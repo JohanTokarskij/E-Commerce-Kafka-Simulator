@@ -30,8 +30,7 @@ def inventory_management_consumer(shutdown_event, consumer_output, products, pro
                                 state[product_id]['quantity'] -= quantity
 
                                 if state[product_id]['quantity'] < product_refill_threshold:
-                                    print(
-                                        f'Refilling {product_id} - {state[product_id]["name"]}')
+                                    #print(f'Refilling {product_id} - {state[product_id]["name"]}')
                                     state[product_id]['quantity'] += product_refill_amount
                             else:
                                 print(
@@ -39,7 +38,7 @@ def inventory_management_consumer(shutdown_event, consumer_output, products, pro
 
                             save_state(state_file, state)
 
-                            consumer_output['Inventory Update: '] = {
+                            consumer_output['Inventory Update:'] = {
                                 pid: state[pid] for pid in sorted(state.keys(), key=int)}
     except Exception as e:
         print(f'Error processing messages: {e}')

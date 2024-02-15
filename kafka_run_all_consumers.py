@@ -7,18 +7,19 @@ from kafka_consumer_2_daily_and_hourly_sales_tracking import daily_and_hourly_sa
 from kafka_consumer_3_daily_sales_report import daily_sales_report_consumer
 from kafka_consumer_4_inventory_management import inventory_management_consumer
 from kafka_consumer_5_and_producer_order_processing import order_processing_consumer
+from kafka_consumer_6_order_processing_statistics import order_processing_statistics_consumer
 from store_initialization import product_refill_amount, product_refill_threshold
 
 
 shutdown_event = threading.Event()
 
 consumer_output = {
-    'Orders since midnight: ': 'Waiting for update...',
-    'Total sales for today: ': 'Waiting for update...',
-    'Total sales for the past hour: ': 'Waiting for update...',
-    'Time left until next daily report: ': 'Waiting for update...',
-    'Inventory Update: ': 'Waiting for update...',
-    'Processed orders statistics': 'Waiting for update...'
+    'Orders since midnight:': 'Waiting for update...',
+    'Total sales for today:': 'Waiting for update...',
+    'Total sales for the past hour:': 'Waiting for update...',
+    'Time left until next daily report:': 'Waiting for update...',
+    'Inventory Update:': 'Waiting for update...',
+    'Processed orders statistics:': 'Waiting for update...'
 }
 
 consumers = [
@@ -26,7 +27,8 @@ consumers = [
     (daily_and_hourly_sales_tracking_consumer, (shutdown_event, consumer_output)),
     (daily_sales_report_consumer, (shutdown_event, consumer_output)),
     (inventory_management_consumer, (shutdown_event, consumer_output, products, product_refill_amount, product_refill_threshold)),
-    (order_processing_consumer, (shutdown_event, ))
+    (order_processing_consumer, (shutdown_event, )),
+    (order_processing_statistics_consumer, (shutdown_event, consumer_output))
 ]
 
 consumer_threads = []

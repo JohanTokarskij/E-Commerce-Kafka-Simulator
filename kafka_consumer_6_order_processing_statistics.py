@@ -21,14 +21,13 @@ def order_processing_statistics_consumer(shutdown_event, consumer_output):
     default_state = {'1. Last 5 minutes': [],
                      '2. Last 30 minutes': [],
                      '3. Last hour': [],
-                     '4. Last 2 hours': [],
-                     '5. Average 5 min/last 2 hours': []}
+                     '4. Last 2 hours': []}
     state = load_state(state_file, default_state)
 
     # Convert lists of state to deque:
     time_windows = {key: deque([datetime.fromisoformat(timestamp) for timestamp in state[key]])
                     for key in state}
-    
+        
     try:
         while not shutdown_event.is_set():
             current_time = datetime.now()
@@ -38,23 +37,27 @@ def order_processing_statistics_consumer(shutdown_event, consumer_output):
                     for message in msgs:
                         order_time = datetime.strptime(message.value['ordertime'], '%Y-%m-%d %H:%M:%S')
 
-                        for window in time_windows.values():
-                            window.append(order_time)
+                        for window in time_windows:
+                            if window != '5. Average 5 min/last 2 hours':
+                                time_windows[window].append(order_time) 
                         
                         update_time_windows(time_windows, current_time)
-                        # CHECK update_time_windows and update state
+
+                        state = {key: list(datetime.isoformat(timestamp) for timestamp in time_windows[key]) for key in time_windows}
+
                         save_state(state_file, state)
 
-                        consumer_output['Processed orders statistics'] = {}
+                        consumer_output['Processed orders statistics:'] = {
+                            key: len(state[key]) for key in state.keys()
+                        }
 
-                    pprint(time_windows)
     except Exception as e:
         print(f'Error in handled orders monitoring: {e}')
     finally:
         consumer_6.close()
 
 
-import threading
+""" import threading
 shutdown_event = threading.Event()
 consumer_output = {}
-order_processing_statistics_consumer(shutdown_event, consumer_output)
+order_processing_statistics_consumer(shutdown_event, consumer_output) """

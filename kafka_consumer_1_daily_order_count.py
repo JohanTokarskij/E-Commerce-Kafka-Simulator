@@ -39,7 +39,7 @@ def daily_order_count_consumer(shutdown_event, consumer_output):
                         state = {'current_date': current_date.isoformat(),
                                  'order_count': order_count}
                         save_state(state_file, state)
-                        consumer_output['Orders since midnight: '] = order_count
+                        consumer_output['Orders since midnight:'] = order_count
 
     except Exception as e:
         print(f'Error processing messages: {e}')

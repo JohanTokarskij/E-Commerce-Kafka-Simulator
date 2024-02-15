@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime, timedelta
+from collections import deque
 from helper_funcs import clear_screen
 from store_initialization import product_refill_threshold, product_refill_amount
 
@@ -58,13 +59,19 @@ def manage_output(shutdown_event, consumer_output):
         for key, value in consumer_output.items():
             print('+', '-'*45, '+')
             print(f'{key:^47}')
-            if isinstance(value, dict) and key == 'Inventory Update: ':
-                print(f'{"ID":>8} {"Product Name":<25} {"Quantity":^10}')
-                for pid, details in value.items():
-                    print(f'{pid:>8} {details["name"]:.<25} {details["quantity"]:^5}')
-                print('\n')
-                print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')
-                print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')         
+            if isinstance(value, dict):
+                if key == 'Inventory Update:':
+                    print(f'{"ID":>8} {"Product Name":<25} {"Quantity":^10}')
+                    for pid, details in value.items():
+                        print(f'{pid:>8} {details["name"]:.<25} {details["quantity"]:^5}')
+                    print('\n')
+                    print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')
+                    print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')         
+                elif key == 'Processed orders statistics:':
+                    print(f'{" ":>5} {"Stat":<28} {"Quantity":^5}')
+                    for stat, quantity in value.items():
+                        print(f'{" ":>5} {stat:.<28} {quantity:^5}')
+
 
             else:
                 print(f'{value:^47}')
@@ -98,7 +105,7 @@ def send_email_simulation(order_id, customer_id):
 
 
 def update_time_windows(time_windows, current_time):
-    for key, window in time_windows:
+    for key, window in time_windows.items():
         if key == '1. Last 5 minutes':
             time_limit = current_time - timedelta(minutes=5)
         elif key == '2. Last 30 minutes':
@@ -106,10 +113,12 @@ def update_time_windows(time_windows, current_time):
         elif key == '3. Last hour':
             time_limit = current_time - timedelta(hours=1)
         elif key == '4. Last 2 hours':
-            time_limit = current_time = timedelta(hours=2)
-        elif key == '5. Average 5 min/last 2 hours':
-            len(time_windows['4. Last 2 hours']/24)
-            continue
+            time_limit = current_time - timedelta(hours=2)
 
         while window and window[0] < time_limit:
             window.popleft()
+        
+        """ if key == '4. Last 2 hours':
+            total_orders_last_2_hours = len(window)
+            average_orders_per_5_min = total_orders_last_2_hours / 24
+            time_windows['5. Average 5 min/last 2 hours'] = deque([average_orders_per_5_min])"""
