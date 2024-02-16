@@ -45,10 +45,3 @@ def daily_order_count_consumer(shutdown_event, consumer_output):
         print(f'Error processing messages: {e}')
     finally:
         consumer_1.close()
-
-
-# DEBUG:
-""" import threading
-shutdown_event = threading.Event()
-consumer_output = {}
-daily_order_count_consumer(shutdown_event, consumer_output) """

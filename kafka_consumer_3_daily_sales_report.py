@@ -85,9 +85,3 @@ def daily_sales_report_consumer(shutdown_event, consumer_output):
         print(f'Error processing messages: {e}')
     finally:
         consumer_3.close()
-
-
-""" import threading
-shutdown_event = threading.Event()
-consumer_output = {}
-daily_sales_report_consumer(shutdown_event, consumer_output) """

@@ -65,11 +65,3 @@ def daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output):
         print(f'Error processing messages: {e}')
     finally:
         consumer_2.close()
-
-
-""" # DEBUG:
-import threading
-shutdown_event = threading.Event()
-consumer_output = {}
-daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output)
- """

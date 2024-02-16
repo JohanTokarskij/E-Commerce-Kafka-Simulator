@@ -1,11 +1,9 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from collections import deque
 from kafka import KafkaConsumer
 from kafka_utility_functions import load_state, save_state
 from kafka_utility_functions import update_time_windows
-
-from pprint import pprint
 
 
 def order_processing_statistics_consumer(shutdown_event, consumer_output):
@@ -62,9 +60,3 @@ def order_processing_statistics_consumer(shutdown_event, consumer_output):
         print(f'Error in handled orders monitoring: {e}')
     finally:
         consumer_6.close()
-
-
-""" import threading
-shutdown_event = threading.Event()
-consumer_output = {}
-order_processing_statistics_consumer(shutdown_event, consumer_output) """

@@ -37,9 +37,3 @@ def order_processing_consumer(shutdown_event):
         print(f'Error in order handling consumer: {e}')
     finally:
         consumer_5.close()
-
-
-""" import threading
-shutdown_event = threading.Event()
-consumer_output = {}
-order_handling_consumer(shutdown_event) """
