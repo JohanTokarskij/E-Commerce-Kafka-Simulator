@@ -5,6 +5,14 @@ from kafka_utility_functions import send_email_simulation
 
 
 def order_processing_consumer(shutdown_event):
+    """
+    Processes incoming e-commerce orders from Kafka topic 'e-commerce-orders'. Simulates email notifications and forwards processed orders.
+    
+    Randomly selects orders to simulate sending an email to the customer, marking the order as processed. Processed orders are then published to a 'processed-orders' topic. 
+    
+    Listens for a shutdown signal provided by "shutdown_event", a threading.Event, to terminate gracefully.
+    """
+
     consumer_5 = KafkaConsumer(
         'e-commerce-orders',
         bootstrap_servers='localhost:9092',

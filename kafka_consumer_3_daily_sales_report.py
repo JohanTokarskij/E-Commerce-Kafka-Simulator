@@ -6,6 +6,14 @@ from helper_funcs import calculate_time_until_midnight
 
 
 def daily_sales_report_consumer(shutdown_event, consumer_output):
+    """
+    Generates daily sales reports from 'e-commerce-orders' Kafka topic at midnight. Outputs report timing to a shared dictionary "consumer_output" in real time.
+    
+    Keeps track of progress between restarts by maintaining state in a JSON file, including order count, daily sales, and product counts.
+    
+    Listens for a shutdown signal provided by "shutdown_event", a threading.Event, to terminate gracefully. 
+    """
+    
     consumer_3 = KafkaConsumer(
         'e-commerce-orders',
         bootstrap_servers='localhost:9092',

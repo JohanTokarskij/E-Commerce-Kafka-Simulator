@@ -7,6 +7,16 @@ from kafka_utility_functions import update_time_windows
 
 
 def order_processing_statistics_consumer(shutdown_event, consumer_output):
+    """
+    Collects and summarizes processing statistics of orders from the 'processed-orders' Kafka topic. Outputs statistics to a shared dictionary "consumer_output" in real time.
+    
+    Maintains a rolling count of processed orders across multiple time windows (last 5 minutes, 30 minutes, hour, 2 hours, avg 5 mins/2 hours). 
+    
+    Keeps track of progress between restarts by maintaining state in a JSON file. 
+    
+    Listens continuously until receiving a shutdown signal via "shutdown_event", a threading.Event, ensuring graceful termination.
+    """
+     
     consumer_6 = KafkaConsumer(
         'processed-orders',
         bootstrap_servers='localhost:9092',
@@ -36,8 +46,7 @@ def order_processing_statistics_consumer(shutdown_event, consumer_output):
                         order_time = datetime.strptime(message.value['ordertime'], '%Y-%m-%d %H:%M:%S')
 
                         for window in time_windows:
-                            if window != '5. Average 5 min/last 2 hours':
-                                time_windows[window].append(order_time) 
+                            time_windows[window].append(order_time) 
                         
                         update_time_windows(time_windows, current_time)
 

@@ -5,6 +5,14 @@ from store_initialization import product_refill_amount, product_refill_threshold
 
 
 def inventory_management_consumer(shutdown_event, consumer_output, products, product_refill_amount, product_refill_threshold):
+    """
+    Tracks inventory levels based on 'e-commerce-orders' Kafka topic. Updates inventory status to a shared dictionary "consumer_output" in real time.
+    
+    Keeps track of progress between restarts by maintaining state in a JSON file. 
+    
+    Listens for a shutdown signal provided by "shutdown_event", a threading.Event, to terminate gracefully.
+    """
+
     consumer_4 = KafkaConsumer(
         'e-commerce-orders',
         bootstrap_servers='localhost:9092',

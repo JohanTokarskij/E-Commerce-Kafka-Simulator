@@ -13,6 +13,7 @@ from store_initialization import product_refill_amount, product_refill_threshold
 
 shutdown_event = threading.Event()
 
+# Shared dictionary for consumer outputs:
 consumer_output = {
     'Orders since midnight:': 'Waiting for update...',
     'Total sales for today:': 'Waiting for update...',

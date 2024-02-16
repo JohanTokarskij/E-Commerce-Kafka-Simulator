@@ -91,10 +91,10 @@ def generate_and_save_report(state, report_date):
     with open(filename, 'w') as file:
         file.write(f'Daily Sales Report for {report_date}\n\n')
         file.write(f'Total Orders: {state["order_count"]}\n\n')
-        file.write(f'Total Sales: ${state["daily_sales"]:.2f}\n\n')
+        file.write(f'Total Sales: {state["daily_sales"]:.2f} $\n\n')
         file.write('Sales per Product:\n')
         for product_name, details in state["product_counts"].items():
-            file.write(f'{product_name}: {details["quantity"]} sold, Total: ${details["total"]:.2f}\n')
+            file.write(f'{product_name}: {details["quantity"]} sold, Total: {details["total"]:.2f} $\n')
     print(f'Report saved to {filename}')
 
 
@@ -116,8 +116,3 @@ def update_time_windows(time_windows, current_time):
 
         while window and window[0] < time_limit:
             window.popleft()
-        
-        """ if key == '4. Last 2 hours':
-            total_orders_last_2_hours = len(window)
-            average_orders_per_5_min = total_orders_last_2_hours / 24
-            time_windows['5. Average 5 min/last 2 hours'] = deque([average_orders_per_5_min])"""

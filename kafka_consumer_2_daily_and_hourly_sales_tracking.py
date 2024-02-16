@@ -6,6 +6,14 @@ from kafka_utility_functions import load_state, save_state
 
 
 def daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output):
+    """
+    Tracks daily and hourly sales from 'e-commerce-orders' Kafka topic. Outputs data to a shared dictionary "consumer_output" in real time.
+    
+    Keeps track of progress between restarts by maintaining state in a JSON file. 
+    
+    Listens for a shutdown signal provided by "shutdown_event", a threading.Event, to terminate gracefully.
+    """
+
     consumer_2 = KafkaConsumer(
         'e-commerce-orders',
         bootstrap_servers='localhost:9092',
