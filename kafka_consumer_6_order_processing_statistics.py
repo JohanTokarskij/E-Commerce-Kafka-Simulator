@@ -47,9 +47,16 @@ def order_processing_statistics_consumer(shutdown_event, consumer_output):
 
                         save_state(state_file, state)
 
+                        if '4. Last 2 hours' in time_windows:
+                            total_orders_last_2_hours = len(time_windows['4. Last 2 hours'])
+                            average_orders_per_5_min_last_2_hours = total_orders_last_2_hours / 24
+                        else:
+                            average_orders_per_5_min_last_2_hours = 0
+
                         consumer_output['Processed orders statistics:'] = {
                             key: len(state[key]) for key in state.keys()
                         }
+                        consumer_output['Processed orders statistics:']['5. Avg 5 mins/last 2 hours'] = int(average_orders_per_5_min_last_2_hours)
 
     except Exception as e:
         print(f'Error in handled orders monitoring: {e}')

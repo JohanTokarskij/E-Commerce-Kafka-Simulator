@@ -61,21 +61,20 @@ def manage_output(shutdown_event, consumer_output):
             print(f'{key:^47}')
             if isinstance(value, dict):
                 if key == 'Inventory Update:':
-                    print(f'{"ID":>8} {"Product Name":<25} {"Quantity":^10}')
+                    print(f'{"ID":>8} {"Product Name":<25} {"Quantity":^8}')
                     for pid, details in value.items():
-                        print(f'{pid:>8} {details["name"]:.<25} {details["quantity"]:^5}')
+                        print(f'{pid:>8} {details["name"]:.<25} {details["quantity"]:<5}')
                     print('\n')
-                    print(f'Inventory Auto-Refill Threshold: Items falling below {product_refill_threshold} will be refilled')
-                    print(f'Inventory Auto-Refill Amount: Each refill operation adds {product_refill_amount} items')         
+                    print(f'Inventory Auto-Refill Threshold: \n\tItems falling below {product_refill_threshold} will be refilled.')
+                    print(f'Inventory Auto-Refill Amount: \n\tEach refill operation adds {product_refill_amount} items.')         
                 elif key == 'Processed orders statistics:':
-                    print(f'{" ":>5} {"Stat":<28} {"Quantity":^5}')
-                    for stat, quantity in value.items():
-                        print(f'{" ":>5} {stat:.<28} {quantity:^5}')
-
-
+                    print(f'{" ":>5} {"Time Window:":<28} {"Order Count:":^5}')
+                    for time_window, order_count in value.items():
+                        print(f'{" ":>5} {time_window:.<28} {order_count:<5}')
             else:
                 print(f'{value:^47}')
-            #print('+', '-'*45, '+', '\n')
+        print('+', '-'*45, '+')
+
 
 def generate_and_save_report(state, report_date):
     """
