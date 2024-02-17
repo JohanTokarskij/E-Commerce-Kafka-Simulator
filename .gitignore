@@ -4,3 +4,4 @@ temp*.py
 *.json
 *.txt
 !requrements.txt
+.env

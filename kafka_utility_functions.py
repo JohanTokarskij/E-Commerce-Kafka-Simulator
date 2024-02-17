@@ -1,9 +1,13 @@
 import json
 import os
+import time
 from datetime import datetime, timedelta
-from collections import deque
+import copy
+from dotenv import load_dotenv
+from opensearchpy import OpenSearch
 from helper_funcs import clear_screen
 from store_initialization import product_refill_threshold, product_refill_amount
+
 
 
 def save_state(file_path, state):
@@ -40,7 +44,7 @@ def load_state(file_path, default_state):
         return default_state
 
 
-def manage_output(shutdown_event, consumer_output):
+def manage_console_output(shutdown_event, consumer_output):
     """
     Continuously manage the output for consumers in the terminal until the shutdown_event is set.
 
@@ -74,6 +78,39 @@ def manage_output(shutdown_event, consumer_output):
             else:
                 print(f'{value:^47}')
         print('+', '-'*45, '+')
+
+
+def manage_opensearch_output(shutdown_even, consumer_output):
+    load_dotenv()
+    OPENSEARCH_USERNAME = os.getenv('OPENSEARCH_USERNAME')
+    OPENSEARCH_PASSWORD = os.getenv('OPENSEARCH_PASSWORD')
+    OPENSEARCH_ENDPOINT = os.getenv('OPENSEARCH_ENDPOINT')
+
+    os_client= OpenSearch(
+        hosts=[{'host': OPENSEARCH_ENDPOINT, 'port': 443}],
+        http_compress=True,
+        http_auth=(OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD),
+        use_ssl=True,
+        verify_certs=True,
+        ssl_assert_hostname=False,
+        ssl_show_warn=False
+    )
+
+    index_name = 'consumer_output'
+
+    while not shutdown_even.is_set():
+        output_snapshot = copy.deepcopy(consumer_output)
+
+        for key, value in output_snapshot.items():
+            document = {
+                'metric': key,
+                'value': value,
+                'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+            }
+            os.client.index(index=index_name, body=document)
+
+        time.sleep(5)
+
 
 
 def generate_and_save_report(state, report_date):
