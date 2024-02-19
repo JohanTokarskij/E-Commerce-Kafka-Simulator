@@ -43,8 +43,8 @@ if __name__ == '__main__':
     output_manager_thread = threading.Thread(target=manage_console_output, args=(shutdown_event, consumer_output))
     output_manager_thread.start()
 
-    #opensearch_manager_thread = threading.Thread(target=manage_opensearch_output, args=(shutdown_event, consumer_output))
-    #opensearch_manager_thread.start()
+    opensearch_manager_thread = threading.Thread(target=manage_opensearch_output, args=(shutdown_event, consumer_output))
+    opensearch_manager_thread.start()
 
     try:
         while not shutdown_event.is_set():
@@ -56,3 +56,4 @@ if __name__ == '__main__':
         thread.join()
 
     
+#

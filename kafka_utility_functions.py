@@ -102,11 +102,15 @@ def manage_opensearch_output(shutdown_event, consumer_output):
         output_snapshot = copy.deepcopy(consumer_output)
 
         for key, value in output_snapshot.items():
+            if isinstance(value, (dict, list)):
+                value = json.dumps(value)
+
             document = {
                 'metric': key,
                 'value': value,
                 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
             }
+
             os_client.index(index=index_name, body=document)
 
         time.sleep(5)
@@ -153,8 +157,3 @@ def update_time_windows(time_windows, current_time):
 
         while window and window[0] < time_limit:
             window.popleft()
-
-""" import threading
-shutdown_event = threading.Event()
-consumer_output = {}
-manage_opensearch_output(shutdown_event, consumer_output) """
