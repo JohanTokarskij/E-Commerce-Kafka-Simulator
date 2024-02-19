@@ -80,7 +80,7 @@ def manage_console_output(shutdown_event, consumer_output):
         print('+', '-'*45, '+')
 
 
-def manage_opensearch_output(shutdown_even, consumer_output):
+def manage_opensearch_output(shutdown_event, consumer_output):
     load_dotenv()
     OPENSEARCH_USERNAME = os.getenv('OPENSEARCH_USERNAME')
     OPENSEARCH_PASSWORD = os.getenv('OPENSEARCH_PASSWORD')
@@ -98,7 +98,7 @@ def manage_opensearch_output(shutdown_even, consumer_output):
 
     index_name = 'consumer_output'
 
-    while not shutdown_even.is_set():
+    while not shutdown_event.is_set():
         output_snapshot = copy.deepcopy(consumer_output)
 
         for key, value in output_snapshot.items():
@@ -107,7 +107,7 @@ def manage_opensearch_output(shutdown_even, consumer_output):
                 'value': value,
                 'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
             }
-            os.client.index(index=index_name, body=document)
+            os_client.index(index=index_name, body=document)
 
         time.sleep(5)
 
@@ -153,3 +153,8 @@ def update_time_windows(time_windows, current_time):
 
         while window and window[0] < time_limit:
             window.popleft()
+
+""" import threading
+shutdown_event = threading.Event()
+consumer_output = {}
+manage_opensearch_output(shutdown_event, consumer_output) """
