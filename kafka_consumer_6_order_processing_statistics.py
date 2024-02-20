@@ -63,7 +63,7 @@ def order_processing_statistics_consumer(shutdown_event, consumer_output):
                         consumer_output['Processed orders statistics:'] = {
                             key: len(state[key]) for key in state.keys()
                         }
-                        consumer_output['Processed orders statistics:']['5. Avg 5 mins/last 2 hours'] = int(average_orders_per_5_min_last_2_hours)
+                        consumer_output['Processed orders statistics:']['5. Avg 5 Mins/Last 2 hours'] = int(average_orders_per_5_min_last_2_hours)
 
     except Exception as e:
         print(f'Error in handled orders monitoring: {e}')

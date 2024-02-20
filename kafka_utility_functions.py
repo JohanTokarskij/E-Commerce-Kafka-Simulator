@@ -99,20 +99,41 @@ def manage_opensearch_output(shutdown_event, consumer_output):
     index_name = 'consumer_output'
 
     while not shutdown_event.is_set():
-        output_snapshot = copy.deepcopy(consumer_output)
-
-        for key, value in output_snapshot.items():
-            if isinstance(value, (dict, list)):
-                value = json.dumps(value)
-
-            document = {
-                'metric': key,
-                'value': value,
-                'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
-            }
-
-            os_client.index(index=index_name, body=document)
-
+        for key, value in consumer_output.items():
+            if isinstance(value, dict):
+                if key == 'Inventory Update:':
+                    for sub_key, sub_value in value.items():
+                        document = {
+                            'metric': f'Product ID {sub_key}',
+                            'value': str(sub_value['quantity']), 
+                            'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                        }
+                        try:
+                            os_client.index(index=index_name, body=document)
+                        except Exception as e:
+                            print(f"Error indexing document: {e}")
+                elif key == 'Processed orders statistics:':
+                    for sub_key, sub_value in value.items():
+                        document = {
+                            'metric': str(sub_key),
+                            'value': str(sub_value),
+                            'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                        }
+                        try:
+                            os_client.index(index=index_name, body=document)
+                        except Exception as e:
+                            print(f"Error indexing document: {e}")
+            else:
+                value_str = str(value)
+                document = {
+                    'metric': key,
+                    'value': value_str,
+                    'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+                }
+                try:
+                    os_client.index(index=index_name, body=document)
+                except Exception as e:
+                    print(f"Error indexing document: {e}")
         time.sleep(5)
 
 
