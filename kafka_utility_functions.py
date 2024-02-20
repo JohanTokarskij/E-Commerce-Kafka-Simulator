@@ -104,7 +104,7 @@ def manage_opensearch_output(shutdown_event, consumer_output):
                 if key == 'Inventory Update:':
                     for sub_key, sub_value in value.items():
                         document = {
-                            'metric': f'{sub_value["name"]} - ProductID {sub_key}',
+                            'metric': f'{sub_value["name"]} (ProductID {sub_key})',
                             'value': str(sub_value['quantity']), 
                             'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                         }
