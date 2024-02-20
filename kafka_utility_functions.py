@@ -97,14 +97,14 @@ def manage_opensearch_output(shutdown_event, consumer_output):
     )
 
     index_name = 'consumer_output'
-
+    # 
     while not shutdown_event.is_set():
         for key, value in consumer_output.items():
             if isinstance(value, dict):
                 if key == 'Inventory Update:':
                     for sub_key, sub_value in value.items():
                         document = {
-                            'metric': f'Product ID {sub_key}',
+                            'metric': f'{sub_value["name"]} - ProductID {sub_key}',
                             'value': str(sub_value['quantity']), 
                             'timestamp': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                         }
