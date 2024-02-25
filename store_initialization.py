@@ -20,5 +20,5 @@ products = [{'product_id': str(i + 1),
              'name': unique_names[i], 
              'price': round(random.uniform(10, 50), 2)} for i in range(10)]
 
-product_refill_threshold = 30
+product_refill_threshold = 50
 product_refill_amount = 100

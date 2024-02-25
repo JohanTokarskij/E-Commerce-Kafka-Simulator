@@ -22,7 +22,7 @@ def inventory_management_consumer(shutdown_event, consumer_output, products, pro
 
     state_file = './kafka_states/kafka_consumer_4_inventory_state.json'
     default_state = {str(product['product_id']): {
-        'name': product['name'], 'quantity': 100} for product in products}
+        'name': product['name'], 'quantity': 150} for product in products}
     state = load_state(state_file, default_state)
 
     try:
