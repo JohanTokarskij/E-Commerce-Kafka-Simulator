@@ -3,7 +3,7 @@
 ## Project Overview
 The "E-Commerce Kafka Simulator" project is a simplified yet powerful tool designed to mimic the complex order management and data analysis activities seen in e-commerce businesses. It uses Apache Kafka to demonstrate how effectively data streaming can handle tasks like sales monitoring, inventory control, order processing and report generation. Kafka's role in managing real-time data across distributed systems is a highlight of this project.
 
-For ease of use and scalability, Kafka and Zookeeper are run inside Docker containers. The project outputs the results of data processing to both console and AWS OpenSearch for detailed analytics and monitoring. This setup ensures users can easily track and analyze the simulated e-commerce operations in real-time.
+For ease of use and scalability, Kafka and Zookeeper are run inside Docker containers. State management has been implemented to guarantee the safe restart of consumers without losing track of aggregated data, ensuring reliability and continuity in data processing. The project outputs the results of data processing to both console and AWS OpenSearch for detailed analytics and monitoring. This setup ensures users can easily track and analyze the simulated e-commerce operations in real-time.
 
 ## Project Flow Chart
 Below is a flow chart illustrating the project's Kafka-based architecture, highlighting the path of orders from production, through processing, to analysis.
