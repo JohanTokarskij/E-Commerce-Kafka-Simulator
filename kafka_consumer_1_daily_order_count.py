@@ -26,9 +26,6 @@ def daily_order_count_consumer(shutdown_event, consumer_output):
 
     state = load_state(state_file, default_state)
 
-    current_date = datetime.fromisoformat(state['current_date']).date()
-    order_count = state['order_count']
-
     try:
         while not shutdown_event.is_set():
             messages = consumer_1.poll(timeout_ms=1000)
@@ -38,16 +35,14 @@ def daily_order_count_consumer(shutdown_event, consumer_output):
                         order_date = datetime.strptime(
                             message.value['ordertime'], '%Y-%m-%d %H:%M:%S').date()
 
-                        if order_date > current_date:
-                            current_date = order_date
-                            order_count = 0
+                        if order_date > datetime.fromisoformat(state['current_date']).date():
+                            state['current_date'] = order_date.isoformat()
+                            state['order_count'] = 0
 
-                        order_count += 1
+                        state['order_count'] += 1
 
-                        state = {'current_date': current_date.isoformat(),
-                                 'order_count': order_count}
                         save_state(state_file, state)
-                        consumer_output['Orders since midnight:'] = order_count
+                        consumer_output['Orders since midnight:'] = state['order_count']
 
     except Exception as e:
         print(f'Error processing messages: {e}')

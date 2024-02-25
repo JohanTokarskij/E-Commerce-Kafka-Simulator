@@ -28,10 +28,8 @@ def daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output):
 
     state = load_state(state_file, default_state)
 
-    current_date = datetime.fromisoformat(state['current_date']).date()
-    daily_sales = state['daily_sales']
-    hourly_sales_data = deque([(datetime.fromisoformat(timestamp), amount)
-                              for timestamp, amount in state.get('hourly_sales_data', [])])
+    hourly_sales_data = deque([(datetime.fromisoformat(order_time), amount)
+                              for order_time, amount in state.get('hourly_sales_data', [])])
 
     try:
         while not shutdown_event.is_set():
@@ -39,34 +37,29 @@ def daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output):
             if messages:
                 for msgs in messages.values():
                     for message in msgs:
-                        order_time = datetime.strptime(
-                            message.value['ordertime'], '%Y-%m-%d %H:%M:%S')
+                        order_time = datetime.strptime(message.value['ordertime'], '%Y-%m-%d %H:%M:%S')
                         order_date = order_time.date()
 
-                        if order_date > current_date:
-                            current_date = order_date
-                            daily_sales = 0
+                        if order_date > datetime.fromisoformat(state['current_date']).date():
+                            state['current_date'] = order_date.isoformat()
+                            state['daily_sales'] = 0
+                            hourly_sales_data.clear()
 
                         order_amount = round(sum(
                             order_detail['quantity'] * order_detail['product']['price'] for order_detail in message.value['order_details']), 2)
-                        daily_sales += order_amount
-
+                        state['daily_sales'] += order_amount
                         hourly_sales_data.append((order_time, order_amount))
 
+                        # Remove sales data older than one hour
                         one_hour_ago = datetime.now() - timedelta(hours=1)
                         while hourly_sales_data and hourly_sales_data[0][0] < one_hour_ago:
                             hourly_sales_data.popleft()
 
-                        hourly_sales_total = sum(
-                            amount for _, amount in hourly_sales_data if _ >= one_hour_ago)
-
-                        state = {
-                            'current_date': current_date.isoformat(),
-                            'daily_sales': round(daily_sales, 2),
-                            'hourly_sales_data': [(timestamp.isoformat(), amount) for timestamp, amount in hourly_sales_data]
-                        }
+                        hourly_sales_total = sum(amount for _, amount in hourly_sales_data if _ >= one_hour_ago)
+                        state['hourly_sales_data'] = [(order_time.isoformat(), amount) for order_time, amount in hourly_sales_data]
                         save_state(state_file, state)
-                        consumer_output['Total sales for today:'] = f'{round(daily_sales, 2)} $'
+
+                        consumer_output['Total sales for today:'] = f'{round(state["daily_sales"], 2)} $'
                         consumer_output['Total sales for the past hour:'] = f'{round(hourly_sales_total, 2)} $'
 
     except Exception as e:

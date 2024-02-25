@@ -2,7 +2,6 @@ import json
 import os
 import time
 from datetime import datetime, timedelta
-import copy
 from dotenv import load_dotenv
 from opensearchpy import OpenSearch
 from helper_funcs import clear_screen
@@ -149,7 +148,8 @@ def generate_and_save_report(state, report_date):
     Returns:
         None
     """
-    filename = f'{report_date.strftime("%Y-%m-%d")}_sales_report.txt'
+    
+    filename = f'./reports/{report_date.strftime("%Y-%m-%d")}_sales_report.txt'
     with open(filename, 'w') as file:
         file.write(f'Daily Sales Report for {report_date}\n\n')
         file.write(f'Total Orders: {state["order_count"]}\n\n')
@@ -161,7 +161,7 @@ def generate_and_save_report(state, report_date):
 
 
 def send_email_simulation(order_id, customer_id):
-    with open('order_emails.txt', 'a') as file:
+    with open('./reports/order_emails.txt', 'a') as file:
         file.write(f'Order {order_id} for Customer {customer_id} has been handled and dispatched at {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}.\n')
 
 

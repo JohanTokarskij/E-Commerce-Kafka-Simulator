@@ -38,11 +38,9 @@ def inventory_management_consumer(shutdown_event, consumer_output, products, pro
                                 state[product_id]['quantity'] -= quantity
 
                                 if state[product_id]['quantity'] < product_refill_threshold:
-                                    #print(f'Refilling {product_id} - {state[product_id]["name"]}')
                                     state[product_id]['quantity'] += product_refill_amount
                             else:
-                                print(
-                                    f"Product ID {product_id} not found in inventory")
+                                print(f'Product ID {product_id} not found in inventory')
 
                             save_state(state_file, state)
 

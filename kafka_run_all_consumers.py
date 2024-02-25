@@ -1,14 +1,14 @@
 import time
 import threading
-from store_initialization import products
+from store_initialization import products, product_refill_amount, product_refill_threshold
 from kafka_utility_functions import manage_console_output, manage_opensearch_output
 from kafka_consumer_1_daily_order_count import daily_order_count_consumer
 from kafka_consumer_2_daily_and_hourly_sales_tracking import daily_and_hourly_sales_tracking_consumer
 from kafka_consumer_3_daily_sales_report import daily_sales_report_consumer
 from kafka_consumer_4_inventory_management import inventory_management_consumer
-from kafka_consumer_5_and_producer_order_processing import order_processing_consumer
+from kafka_consumer_5_and_order_processing_producer import order_processing_consumer
 from kafka_consumer_6_order_processing_statistics import order_processing_statistics_consumer
-from store_initialization import product_refill_amount, product_refill_threshold
+from helper_funcs import setup_environment
 
 
 shutdown_event = threading.Event()
@@ -35,6 +35,8 @@ consumers = [
 consumer_threads = []
 
 if __name__ == '__main__':
+    setup_environment()
+
     for consumer, args in consumers:
         thread = threading.Thread(target=consumer, args=args)
         thread.start()
@@ -54,6 +56,3 @@ if __name__ == '__main__':
         shutdown_event.set()
     for thread in consumer_threads + [output_manager_thread, opensearch_manager_thread]:
         thread.join()
-
-    
-#
