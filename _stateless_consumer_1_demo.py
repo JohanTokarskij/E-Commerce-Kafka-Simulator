@@ -8,8 +8,6 @@ def daily_order_count_consumer():
     consumer_1 = KafkaConsumer(
         'stateless-demo',
         bootstrap_servers='localhost:9092',
-        group_id='daily_order_count_group',
-        auto_offset_reset='latest',
         value_deserializer=lambda x: json.loads(x.decode()))
     
     order_count = 0
@@ -36,4 +34,4 @@ def daily_order_count_consumer():
         consumer_1.close()
 
 daily_order_count_consumer()
-# group_id='daily_order_count_group'
+# group_id='stateless-demo', auto_offset_reset='latest',

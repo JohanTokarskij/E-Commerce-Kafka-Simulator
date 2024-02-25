@@ -43,7 +43,6 @@ def daily_and_hourly_sales_tracking_consumer(shutdown_event, consumer_output):
                         if order_date > datetime.fromisoformat(state['current_date']).date():
                             state['current_date'] = order_date.isoformat()
                             state['daily_sales'] = 0
-                            hourly_sales_data.clear()
 
                         order_amount = round(sum(
                             order_detail['quantity'] * order_detail['product']['price'] for order_detail in message.value['order_details']), 2)
