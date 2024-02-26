@@ -132,7 +132,7 @@ def manage_opensearch_output(shutdown_event, consumer_output):
                 try:
                     os_client.index(index=index_name, body=document)
                 except Exception as e:
-                    print(f"Error indexing document: {e}")
+                    print(f'Error indexing document: {e}')
         time.sleep(5)
 
 
