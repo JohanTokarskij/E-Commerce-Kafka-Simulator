@@ -45,7 +45,7 @@ def load_state(file_path, default_state):
 
 def manage_console_output(shutdown_event, consumer_output):
     """
-    Continuously manage the output for consumers in the terminal until the shutdown_event is set.
+    Manages consumer output in the console, updating every 1 second until shutdown_event is set.
 
     Args:
         shutdown_event (threading.Event): An event to signal the function to stop running.
@@ -80,6 +80,19 @@ def manage_console_output(shutdown_event, consumer_output):
 
 
 def manage_opensearch_output(shutdown_event, consumer_output):
+    """
+    Sends consumer output data to OpenSearch at 1-second intervals until shutdown_event is set. 
+    It formats the consumer data for OpenSearch and handles its transmission to a specified index. 
+
+    Args:
+        shutdown_event (threading.Event): Signals when to stop the function.
+        consumer_output (dict): Output from consumers to be sent to OpenSearch.
+
+    Utilizes environment variables for OpenSearch credentials and endpoint.
+
+    Returns:
+        None
+    """
     load_dotenv()
     OPENSEARCH_USERNAME = os.getenv('OPENSEARCH_USERNAME')
     OPENSEARCH_PASSWORD = os.getenv('OPENSEARCH_PASSWORD')
@@ -96,7 +109,7 @@ def manage_opensearch_output(shutdown_event, consumer_output):
     )
 
     index_name = 'consumer_output'
-    # 
+    
     while not shutdown_event.is_set():
         for key, value in consumer_output.items():
             if isinstance(value, dict):
@@ -133,7 +146,7 @@ def manage_opensearch_output(shutdown_event, consumer_output):
                     os_client.index(index=index_name, body=document)
                 except Exception as e:
                     print(f'Error indexing document: {e}')
-        time.sleep(5)
+        time.sleep(1)
 
 
 

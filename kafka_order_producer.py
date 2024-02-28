@@ -1,32 +1,25 @@
 import json
-from datetime import datetime
 from time import sleep
 import random
 from kafka import KafkaProducer
-from store_initialization import products, order_id, CUSTOMER_ID
+from store_initialization import generate_order
+from helper_funcs import clear_screen
 
-def generate_order():
-    global order_id
-    order = {
-        'order_id': order_id,
-        'order_details': [
-            {
-                'product': random.choice(products),
-                'quantity': random.randint(1,5)
-            } for _ in range(random.randint(1,5))
-        ],
-        'customer_id': random.choice(CUSTOMER_ID),
-        'ordertime': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    }
-    order_id += 1
-    return order
+def order_producer():
+    try:
+        producer = KafkaProducer(bootstrap_servers='localhost:9092',
+                                value_serializer=lambda v: json.dumps(v).encode())
+        
+        print('Order producer has been started.')
+        while True:
+            order = generate_order()
+            producer.send('e-commerce-orders', order)
+            producer.flush()
+            sleep(random.uniform(0.1, 0.5))
+    except KeyboardInterrupt:
+        print('Shutting down order producer.')
+        clear_screen()
 
-producer = KafkaProducer(bootstrap_servers='localhost:9092',
-                         value_serializer=lambda v: json.dumps(v).encode())
-
-while True:
-    order = generate_order()
-    producer.send('e-commerce-orders', order)
-    producer.flush()
-    sleep(random.uniform(0.1, 0.5))
+if __name__ == '__main__':
+    order_producer()
