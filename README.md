@@ -39,13 +39,6 @@ Below is a flow chart illustrating the project's Kafka-based architecture, highl
 4. Install the required dependencies: `pip install -r requirements.txt`
 5. Run `docker-compose up -d` in terminal to pull the necessary Docker images and start the containers.
 
-
-## Running the Simulation:
-- Make sure Kafka and Zookeper are running in Docker (execute `docker-compose up -d` to start the containers).
-- Start the main producer: To begin generating and dispatching orders to the Kafka topic, open your console and execute the command `python kafka_order_producer.py`. This step activates the producer script, which is responsible for creating the simulation's order flow.
-
-- Initialize the consumers and the second producer: Open another console window and run `python kafka_run_all_consumers.py`. This command launches all the consumer scripts and a second producer, working together to process the incoming orders.
-
 ### Integrating AWS OpenSearch for Analytics
 The project is configured to dispatch output to AWS OpenSearch, in addition to providing console output. Here’s a brief guide on setting up AWS OpenSearch and configuring the project to communicate with it:
 
@@ -63,6 +56,18 @@ OPENSEARCH_USERNAME=your_opensearch_username
 OPENSEARCH_PASSWORD=your_opensearch_password
 OPENSEARCH_ENDPOINT=your_opensearch_endpoint
 ```
-After completing the setup, a dashboard can be created in AWS OpenSearch for real-time data visualization, as illustrated in the provided example:
+
+
+## Running the Simulation:
+- Ensure Kafka and Zookeeper are active in Docker by using `docker-compose up -d`.
+- To start order generation, run `python kafka_order_producer.py` in the console. This initiates the producer script for simulating order flow.
+
+- To activate consumers and the secondary producer, use python `kafka_run_all_consumers.py` in a new console window. This triggers the processing scripts for orders and allows you to choose between console, AWS OpenSearch, or both for output display.
+
+Upon setup, you can visualize data in real-time with AWS OpenSearch by creating a dashboard, as shown below:
 
 ![GitHub Logo](documentation_images/AWS-OpenSearch-dashboard-example.png)
+
+For a simpler display, console output is also available:
+
+![GitHub Logo](documentation_images/console_output.png)
